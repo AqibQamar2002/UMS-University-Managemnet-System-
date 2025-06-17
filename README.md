@@ -23,9 +23,3 @@ A full-stack University Management System developed as part of my 4th semester W
 - REST API integration with Java Servlets  
 - Secure session handling using HTTP sessions  
 - Improved understanding of real-world application structure  
-
-## 🚀 How to Run the Project
-
-1. Clone the repository  
-   ```bash
-   git clone https://github.com/yourusername/ums-project.git
