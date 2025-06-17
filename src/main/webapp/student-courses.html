@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Courses - University Management System</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .course-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+            transition: transform 0.2s;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .course-card h3 {
+            color: var(--text-color);
+            margin-bottom: 16px;
+        }
+
+        .course-card p {
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        .course-details {
+            margin-bottom: 20px;
+        }
+
+        .enroll-btn {
+            padding: 8px 16px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .enroll-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .enroll-btn:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+        }
+
+        .enroll-btn.enrolled {
+            background: var(--success-color);
+        }
+
+        .enroll-btn.pending {
+            background: var(--warning-color);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-left: 8px;
+        }
+
+        .status-pending {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .status-approved {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .status-rejected {
+            background: var(--error-color);
+            color: white;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+        }
+
+        .user-info .user-details {
+            flex: 1;
+        }
+
+        .user-info .user-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .user-info .user-role {
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: var(--error-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="user-info">
+                <img src="assets/image.png" alt="User Avatar">
+                <div class="user-details">
+                    <div class="user-name" id="userName">Admin User</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <h1>Course Catalog</h1>
+            <nav>
+                <a href="client/dashboard.html" class="nav-btn">Dashboard</a>
+                <a href="student-courses.html" class="nav-btn active">Courses</a>
+                <!-- <a href="instructors.html" class="nav-btn">Instructors</a> -->
+            </nav>
+        </header>
+
+        <main>
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('available')">Available Courses</button>
+                <button class="tab" onclick="showTab('enrolled')">Enrolled Courses</button>
+                <button class="tab" onclick="showTab('pending')">Pending Requests</button>
+            </div>
+
+            <div id="availableCourses" class="course-grid">
+                <!-- Available courses will be populated here -->
+            </div>
+
+            <div id="enrolledCourses" class="course-grid" style="display: none;">
+                <!-- Enrolled courses will be populated here -->
+            </div>
+
+            <div id="pendingCourses" class="course-grid" style="display: none;">
+                <!-- Pending enrollment requests will be populated here -->
+            </div>
+        </main>
+    </div>
+
+    <script src="js/student-courses.js?v=1.0.1"></script>
+</body>
+</html> 

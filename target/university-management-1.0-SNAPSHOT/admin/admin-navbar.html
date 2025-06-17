@@ -1,0 +1,28 @@
+<nav class="admin-navbar">
+    <a href="dashboard.html" class="nav-btn" id="homeBtn">Home</a>
+    <a href="students.html" class="nav-btn">Students</a>
+    <a href="courses.html" class="nav-btn">Courses</a>
+    <a href="instructors.html" class="nav-btn">Instructors</a>
+</nav>
+<style>
+.admin-navbar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    background: #f0f4f8;
+    padding: 12px 24px;
+    border-radius: 8px;
+}
+.admin-navbar .nav-btn {
+    color: #2d3a4a;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+.admin-navbar .nav-btn:hover, .admin-navbar .nav-btn.active {
+    background: #3b82f6;
+    color: #fff;
+}
+</style> 

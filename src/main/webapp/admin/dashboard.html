@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - University Management System</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+            transition: transform 0.2s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .dashboard-card h3 {
+            color: var(--text-color);
+            margin-bottom: 16px;
+        }
+
+        .dashboard-card p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .stat-card .number {
+            font-size: 2em;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+        }
+
+        .user-info .user-details {
+            flex: 1;
+        }
+
+        .user-info .user-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .user-info .user-role {
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: var(--error-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+
+        #usersTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        #usersTable th, #usersTable td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        #usersTable th {
+            background: #f0f0f0;
+        }
+        #usersTable button {
+            margin: 0 4px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: none;
+            background: #3f51b5;
+            color: #fff;
+            cursor: pointer;
+        }
+        #usersTable button:hover {
+            background: #283593;
+        }
+        #usersTable select {
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="user-info">
+                <img src="../assets/image.png" alt="User Avatar">
+                <div class="user-details">
+                    <div class="user-name" id="userName">Admin User</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <h1>Admin Dashboard</h1>
+            <nav>
+                <button class="nav-btn" onclick="showTab('dashboard')">Dashboard</button>
+                <a href="../students.html" class="nav-btn">Students</a>
+                <a href="../courses.html" class="nav-btn">Courses</a>
+                <a href="../instructors.html" class="nav-btn">Instructors</a>
+            </nav>
+            <!-- <div class="tabs">
+                <button class="tab" onclick="showTab('users')">Users</button>
+                <button class="tab" onclick="showTab('requests')">Enrollment Requests</button>
+            </div> -->
+        </header>
+
+        <div id="dashboardTab" class="tab-content">
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <h4>Total Students</h4>
+                    <div class="number" id="totalStudents">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Total Courses</h4>
+                    <div class="number" id="totalCourses">0</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Total Instructors</h4>
+                    <div class="number" id="totalInstructors">0</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>Student Management</h3>
+                    <p>Add, edit, and manage student records. View student details and enrollment information.</p>
+                    <a href="../students.html" class="feature-btn">Manage Students</a>
+                </div>
+                <div class="dashboard-card">
+                    <h3>Course Management</h3>
+                    <p>Create and manage courses. Assign instructors and manage course schedules.</p>
+                    <a href="../courses.html" class="feature-btn">Manage Courses</a>
+                </div>
+                <div class="dashboard-card">
+                    <h3>Instructor Management</h3>
+                    <p>Manage instructor profiles and assignments. Track instructor performance.</p>
+                    <a href="../instructors.html" class="feature-btn">Manage Instructors</a>
+                </div>
+                <div class="dashboard-card">
+                    <h3>Enrollment Requests</h3>
+                    <p>Review, approve, or deny student enrollment requests for courses.</p>
+                    <a href="admin-enrollment-requests.html" class="feature-btn">Manage Enrollment Requests</a>
+                </div>
+                <div class="dashboard-card">
+                    <h3>Assigned Courses</h3>
+                    <p>View and manage all course assignments to instructors.</p>
+                    <a href="admin-assigned-courses.html" class="feature-btn">View Assigned Courses</a>
+                </div>
+               <div class="dashboard-card">
+                <h3>User Management</h3>
+                <p>Add, edit, and manage user roles and permissions.</p>
+                <a href="admin-user-management.html" class="feature-btn">Manage Users</a>
+               </div>
+            </div>
+        </div>
+        <div id="usersTab" class="tab-content" style="display: none;">
+            <h2>All Users</h2>
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <tr>
+                            <th class="blue-cell">ID</th>
+                            <th class="blue-cell">Name</th>
+                            <th class="blue-cell">Email</th>
+                            <th class="blue-cell">Role</th>
+                            <th class="blue-cell">Actions</th>
+                        </tr>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            
+        </div>
+        <div id="requestsTab" class="tab-content" style="display:none;">
+            <iframe src="admin-enrollment-requests.html" style="width:100%;height:600px;border:none;"></iframe>
+        </div>
+        
+    </div>
+
+    <script>
+        // Check if user is logged in and is admin
+        function checkAuth() {
+            fetch('/university-management-1.0-SNAPSHOT/check-auth', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.authenticated || data.role !== 'ADMIN') {
+                    window.location.href = '../login.html';
+                } else {
+                    document.getElementById('userName').textContent = data.name;
+                }
+            })
+            .catch(() => {
+                window.location.href = '../login.html';
+            });
+        }
+
+        // Fetch dashboard statistics
+        function fetchStats() {
+            fetch('/university-management-1.0-SNAPSHOT/dashboard-stats', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('totalStudents').textContent = data.totalStudents;
+                document.getElementById('totalCourses').textContent = data.totalCourses;
+                document.getElementById('totalInstructors').textContent = data.totalInstructors;
+            });
+        }
+
+        // Logout function
+        function logout() {
+            fetch('/university-management-1.0-SNAPSHOT/logout', {
+                method: 'POST',
+                credentials: 'include'
+            })
+            .then(() => {
+                window.location.href = '../login.html';
+            });
+        }
+
+        // Initial load
+        checkAuth();
+        fetchStats();
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            var tabBtn = document.querySelector(`.tab[onclick="showTab('${tabName}')"]`);
+            if (tabBtn) {
+                tabBtn.classList.add('active');
+            }
+            document.getElementById('dashboardTab').style.display = tabName === 'dashboard' ? 'block' : 'none';
+            document.getElementById('usersTab').style.display = tabName === 'users' ? 'block' : 'none';
+            document.getElementById('requestsTab').style.display = tabName === 'requests' ? 'block' : 'none';
+        }
+
+        function fetchUsers() {
+            fetch('/university-management-1.0-SNAPSHOT/admin/users', { credentials: 'include' })
+            .then(res => res.json())
+            .then(users => {
+                const tbody = document.querySelector('#usersTable tbody');
+                tbody.innerHTML = '';
+                users.forEach(user => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${user.firstName} ${user.lastName}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <select class="blue-select" onchange="setUserRole(${user.id}, this.value)">
+                                <option value="ADMIN" ${user.role === 'ADMIN' ? 'selected' : ''}>ADMIN</option>
+                                <option value="CLIENT" ${user.role === 'CLIENT' ? 'selected' : ''}>CLIENT</option>
+                                <option value="STUDENT" ${user.role === 'STUDENT' ? 'selected' : ''}>STUDENT</option>
+                                <option value="INSTRUCTOR" ${user.role === 'INSTRUCTOR' ? 'selected' : ''}>INSTRUCTOR</option>
+                            </select>
+                        </td>
+                        <td>
+                            ${user.role !== 'STUDENT' ? `<button class="blue-btn" onclick="addToStudent(${user.id})">Add as Student</button>` : ''}
+                            ${user.role !== 'INSTRUCTOR' ? `<button class="blue-btn" onclick="addToInstructor(${user.id})">Add as Instructor</button>` : ''}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        function setUserRole(userId, role) {
+            fetch('/university-management-1.0-SNAPSHOT/admin/users/role', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, role })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) alert('Failed to update role: ' + data.message);
+            });
+        }
+
+        function addToStudent(userId) {
+            fetch('/university-management-1.0-SNAPSHOT/admin/users/add-student', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+            });
+        }
+
+        function addToInstructor(userId) {
+            fetch('/university-management-1.0-SNAPSHOT/admin/users/add-instructor', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+            });
+        }
+
+        // Call fetchUsers() when the Users tab is shown
+        document.addEventListener('DOMContentLoaded', function() {
+            var usersTabBtn = document.querySelector('.tab[onclick="showTab(\'users\')"]');
+            if (usersTabBtn) {
+                usersTabBtn.addEventListener('click', fetchUsers);
+            }
+        });
+
+        // --- Assign Course to Instructor Section ---
+        
+    </script>
+</body>
+</html> 

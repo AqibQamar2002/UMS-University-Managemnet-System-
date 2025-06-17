@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enrollment Requests - University Management System</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .request-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .request-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .request-card h3 {
+            color: var(--text-color);
+            margin-bottom: 16px;
+        }
+
+        .request-card p {
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        .request-details {
+            margin-bottom: 20px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .approve-btn {
+            padding: 8px 16px;
+            background: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .approve-btn:hover {
+            background: #2e7d32;
+        }
+
+        .reject-btn {
+            padding: 8px 16px;
+            background: var(--error-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .reject-btn:hover {
+            background: #d32f2f;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            padding: 8px 16px;
+            background: var(--card-bg);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-left: 8px;
+        }
+
+        .status-pending {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        .status-approved {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .status-rejected {
+            background: var(--error-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Enrollment Requests</h1>
+            <nav>
+                <a href="dashboard.html" class="nav-btn">Dashboard</a>
+                <a href="enrollment-requests.html" class="nav-btn active">Enrollment Requests</a>
+                <a href="../courses.html" class="nav-btn">Courses</a>
+                <a href="../instructors.html" class="nav-btn">Instructors</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('pending')">Pending Requests</button>
+                <button class="tab" onclick="showTab('approved')">Approved Requests</button>
+                <button class="tab" onclick="showTab('rejected')">Rejected Requests</button>
+            </div>
+
+            <div id="pendingRequests" class="request-grid">
+                <!-- Pending requests will be populated here -->
+            </div>
+
+            <div id="approvedRequests" class="request-grid" style="display: none;">
+                <!-- Approved requests will be populated here -->
+            </div>
+
+            <div id="rejectedRequests" class="request-grid" style="display: none;">
+                <!-- Rejected requests will be populated here -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check if user is logged in and is admin
+        function checkAuth() {
+            fetch('/university-management-1.0-SNAPSHOT/check-auth', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.authenticated || data.role !== 'ADMIN') {
+                    window.location.href = '../login.html';
+                }
+            })
+            .catch(() => {
+                window.location.href = '../login.html';
+            });
+        }
+
+        // Show selected tab
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelector(`.tab[onclick="showTab('${tabName}')"]`).classList.add('active');
+            
+            document.getElementById('pendingRequests').style.display = tabName === 'pending' ? 'grid' : 'none';
+            document.getElementById('approvedRequests').style.display = tabName === 'approved' ? 'grid' : 'none';
+            document.getElementById('rejectedRequests').style.display = tabName === 'rejected' ? 'grid' : 'none';
+        }
+
+        // Fetch pending enrollment requests
+        function fetchPendingRequests() {
+            fetch('/university-management-1.0-SNAPSHOT/admin/pending-enrollments', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(requests => {
+                const requestsGrid = document.getElementById('pendingRequests');
+                requestsGrid.innerHTML = requests.map(request => `
+                    <div class="request-card">
+                        <h3>${request.courseName}</h3>
+                        <div class="request-details">
+                            <p><strong>Student:</strong> ${request.studentName}</p>
+                            <p><strong>Student ID:</strong> ${request.studentId}</p>
+                            <p><strong>Course Code:</strong> ${request.courseCode}</p>
+                            <p><strong>Request Date:</strong> ${new Date(request.requestDate).toLocaleDateString()}</p>
+                            <p><strong>Status:</strong> 
+                                <span class="status-badge status-pending">
+                                    Pending
+                                </span>
+                            </p>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="approve-btn" onclick="handleRequest(${request.id}, 'APPROVE')">
+                                Approve
+                            </button>
+                            <button class="reject-btn" onclick="handleRequest(${request.id}, 'REJECT')">
+                                Reject
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        // Fetch approved enrollment requests
+        function fetchApprovedRequests() {
+            fetch('/university-management-1.0-SNAPSHOT/admin/approved-enrollments', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(requests => {
+                const requestsGrid = document.getElementById('approvedRequests');
+                requestsGrid.innerHTML = requests.map(request => `
+                    <div class="request-card">
+                        <h3>${request.courseName}</h3>
+                        <div class="request-details">
+                            <p><strong>Student:</strong> ${request.studentName}</p>
+                            <p><strong>Student ID:</strong> ${request.studentId}</p>
+                            <p><strong>Course Code:</strong> ${request.courseCode}</p>
+                            <p><strong>Approval Date:</strong> ${new Date(request.approvalDate).toLocaleDateString()}</p>
+                            <p><strong>Status:</strong> 
+                                <span class="status-badge status-approved">
+                                    Approved
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        // Fetch rejected enrollment requests
+        function fetchRejectedRequests() {
+            fetch('/university-management-1.0-SNAPSHOT/admin/rejected-enrollments', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(requests => {
+                const requestsGrid = document.getElementById('rejectedRequests');
+                requestsGrid.innerHTML = requests.map(request => `
+                    <div class="request-card">
+                        <h3>${request.courseName}</h3>
+                        <div class="request-details">
+                            <p><strong>Student:</strong> ${request.studentName}</p>
+                            <p><strong>Student ID:</strong> ${request.studentId}</p>
+                            <p><strong>Course Code:</strong> ${request.courseCode}</p>
+                            <p><strong>Rejection Date:</strong> ${new Date(request.rejectionDate).toLocaleDateString()}</p>
+                            <p><strong>Status:</strong> 
+                                <span class="status-badge status-rejected">
+                                    Rejected
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        // Handle enrollment request (approve/reject)
+        function handleRequest(requestId, action) {
+            fetch('/university-management-1.0-SNAPSHOT/admin/handle-enrollment', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ requestId, action })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Request ${action.toLowerCase()}d successfully!`);
+                    fetchPendingRequests();
+                    fetchApprovedRequests();
+                    fetchRejectedRequests();
+                } else {
+                    alert(`Failed to ${action.toLowerCase()} request: ` + data.message);
+                }
+            });
+        }
+
+        // Initial load
+        checkAuth();
+        fetchPendingRequests();
+        fetchApprovedRequests();
+        fetchRejectedRequests();
+    </script>
+</body>
+</html> 

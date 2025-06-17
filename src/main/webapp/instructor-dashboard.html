@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Instructor Dashboard - University Management System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+         .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+            transition: transform 0.2s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .dashboard-card h3 {
+            color: var(--text-color);
+            margin-bottom: 16px;
+        }
+
+        .dashboard-card p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+        }
+
+        .user-info .user-details {
+            flex: 1;
+        }
+
+        .user-info .user-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .user-info .user-role {
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: var(--error-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="user-info">
+                <img src="assets/image.png" alt="User Avatar">
+                <div class="user-details">
+                    <div class="user-name" id="userName1">Instructor User</div>
+                    <div class="user-role">Instructor</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <h1>Instructor Dashboard</h1>
+            <nav>
+                <a href="instructor-dashboard.html" class="nav-btn active">Dashboard</a>
+                <!-- <a href="courses.html" class="nav-btn">Courses</a> -->
+                <!-- <a href="logout.html" class="nav-btn" style="float:right;">Logout</a> -->
+            </nav>
+        </header>
+        <main>
+            <h2>Assigned Courses</h2>
+            <table id="assignedCoursesTable">
+                <thead>
+                    <tr>
+                        <th>Course ID</th>
+                        <th>Course Name</th>
+                        <th>Course Code</th>
+                        <th>Credits</th>
+                        <th>Schedule</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Assigned courses will be loaded here -->
+                </tbody>
+            </table>
+        </main>
+    </div>
+    <script>
+
+        function checkAuth() {
+            fetch('/university-management-1.0-SNAPSHOT/check-auth', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.authenticated || data.role !== 'INSTRUCTOR') {
+                    window.location.href = 'login.html';
+                } else {
+                    document.getElementById('userName1').textContent = data.name;
+                }
+            })
+            .catch(() => {
+                window.location.href = 'login.html';
+            });
+        }
+
+    function fetchAssignedCourses() {
+        fetch('/university-management-1.0-SNAPSHOT/instructor/assigned-courses', {
+            method: 'GET',
+            credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(courses => {
+            const tbody = document.querySelector('#assignedCoursesTable tbody');
+            tbody.innerHTML = '';
+            if (courses.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No assigned courses found.</td></tr>';
+                return;
+            }
+            courses.forEach(course => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${course.courseId}</td>
+                    <td>${course.courseName}</td>
+                    <td>${course.courseCode}</td>
+                    <td>${course.credits}</td>
+                    <td>${course.schedule || 'To be announced'}</td>
+                    <td>${course.status || 'ACTIVE'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        });
+    }
+    // Logout function
+    function logout() {
+            fetch('/university-management-1.0-SNAPSHOT/logout', {
+                method: 'POST',
+                credentials: 'include'
+            })
+            .then(() => {
+                window.location.href = 'login.html';
+            });
+        }
+        checkAuth();
+    fetchAssignedCourses();
+    </script>
+</body>
+</html> 

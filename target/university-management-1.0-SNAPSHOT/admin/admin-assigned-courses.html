@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Assigned Courses</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+        }
+
+        .user-info .user-details {
+            flex: 1;
+        }
+
+        .user-info .user-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .user-info .user-role {
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: var(--error-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="user-info" bis_skin_checked="1">
+                <img src="../assets/image.png" alt="User Avatar">
+                <div class="user-details" bis_skin_checked="1">
+                    <div class="user-name" id="userName" bis_skin_checked="1">Admin User</div>
+                    <div class="user-role" bis_skin_checked="1">Administrator</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            <h1>Assigned Courses</h1>
+            <nav>
+                <a href="dashboard.html" class="nav-btn">Dashboard</a>
+                <a href="../students.html" class="nav-btn">Students</a>
+                <a href="../courses.html" class="nav-btn">Courses</a>
+                <a href="../instructors.html" class="nav-btn">Instructors</a>
+            </nav>
+        </header>
+        <main>
+            <h2>Assign Course to Instructor</h2>
+            <div class="assign-section">
+                <form id="assignCourseForm" class="assign-form">
+                    <label for="instructorSelect">Instructor:</label>
+                    <select id="instructorSelect" class="blue-select"></select>
+
+                    <label for="courseSelect">Course:</label>
+                    <select id="courseSelect" class="blue-select"></select>
+
+                    <button type="submit" class="blue-btn">Assign Course</button>
+                </form>
+                <div id="assignMessage"></div>
+            </div>
+            <table id="assignedCoursesTable">
+                <thead>
+                    <tr>
+                        <th>Assignment ID</th>
+                        <th>Instructor</th>
+                        <th>Course</th>
+                        <th>Assigned Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Assigned courses will be loaded here -->
+                </tbody>
+            </table>
+        </main>
+    </div>
+    <script>
+    function populateAssignDropdowns() {
+        fetch('/university-management-1.0-SNAPSHOT/admin/instructors', { credentials: 'include' })
+            .then(res => res.json())
+            .then(instructors => {
+                const instructorSelect = document.getElementById('instructorSelect');
+                instructorSelect.innerHTML = instructors.map(i =>
+                    `<option value="${i.instructorId}">${i.firstName} ${i.lastName}</option>`
+                ).join('');
+            });
+
+        fetch('/university-management-1.0-SNAPSHOT/admin/courses', { credentials: 'include' })
+            .then(res => res.json())
+            .then(courses => {
+                const courseSelect = document.getElementById('courseSelect');
+                courseSelect.innerHTML = courses.map(c =>
+                    `<option value="${c.courseId}">${c.courseName}</option>`
+                ).join('');
+            });
+    }
+
+    document.getElementById('assignCourseForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const instructorId = document.getElementById('instructorSelect').value;
+        const courseId = document.getElementById('courseSelect').value;
+        fetch('/university-management-1.0-SNAPSHOT/admin/assign-course', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ instructorId, courseId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('assignMessage').textContent = data.message;
+            document.getElementById('assignMessage').style.color = data.success ? 'green' : 'red';
+            if (data.success) {
+                fetchAssignedCourses(); // Refresh the table after assignment
+            }
+        });
+    });
+
+    function fetchAssignedCourses() {
+        fetch('/university-management-1.0-SNAPSHOT/admin/assigned-courses', {
+            method: 'GET',
+            credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(assignments => {
+            const tbody = document.querySelector('#assignedCoursesTable tbody');
+            tbody.innerHTML = '';
+            if (assignments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No assigned courses found.</td></tr>';
+                return;
+            }
+            assignments.forEach(a => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${a.id}</td>
+                    <td>${a.instructorName}</td>
+                    <td>${a.courseName}</td>
+                    <td>${a.assignedDate ? new Date(a.assignedDate).toLocaleString() : ''}</td>
+                    <td>${a.status || 'ACTIVE'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        });
+    }
+
+    // Check if user is logged in and is admin
+    function checkAuth() {
+            fetch('/university-management-1.0-SNAPSHOT/check-auth', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.authenticated || data.role !== 'ADMIN') {
+                    window.location.href = '../login.html';
+                } else {
+                    document.getElementById('userName').textContent = data.name;
+                }
+            })
+            .catch(() => {
+                window.location.href = '../login.html';
+            });
+        }
+
+     // Logout function
+     function logout() {
+            fetch('/university-management-1.0-SNAPSHOT/logout', {
+                method: 'POST',
+                credentials: 'include'
+            })
+            .then(() => {
+                window.location.href = '../login.html';
+            });
+        }
+
+        // Initial check for authentication
+        checkAuth();
+    // Call these on page load
+    populateAssignDropdowns();
+    fetchAssignedCourses();
+    </script>
+</body>
+</html> 

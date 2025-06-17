@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Management System</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+:root {
+    --primary-color: #4361ee;
+    --primary-hover: #3a56d4;
+    --secondary-color: #f72585;
+    --text-color: #333;
+    --text-light: #666;
+    --background: #f8f9fa;
+    --card-bg: #fff;
+    --border-color: #e0e0e0;
+    --success-color: #4caf50;
+    --error-color: #f44336;
+    --warning-color: #ff9800;
+    --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    font-size: 16px;
+    line-height: 1.6;
+}
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 24px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    box-shadow: var(--box-shadow);
+}
+header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+header h1 {
+    color: #2c3e50;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+h2 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: var(--text-color);
+    font-weight: 600;
+    text-align: center;
+}
+nav {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.primary-btn, .secondary-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.primary-btn {
+    background: var(--primary-color);
+    color: white;
+}
+
+.secondary-btn {
+    background: #e9ecef;
+    color: var(--text-color);
+}
+
+.primary-btn:hover {
+    background: var(--primary-hover);
+}
+
+.secondary-btn:hover {
+    background: #dee2e6;
+}
+
+form#studentForm {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+form#studentForm input, form#studentForm button {
+    flex: 1 1 180px;
+    min-width: 140px;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s;
+}
+
+form#studentForm input:focus {
+    border: 1.5px solid var(--primary-color);
+}
+
+form#studentForm button {
+    max-width: 160px;
+    flex: 0 0 140px;
+    align-self: stretch;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+form#studentForm button:hover {
+    background: var(--primary-hover);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: #fafbfc;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+th, td {
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+th {
+    background: #f0f4f8;
+    font-weight: 600;
+    border-bottom: 2px solid #e0e0e0;
+}
+tr:last-child td {
+    border-bottom: none;
+}
+button.action-btn {
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: none;
+    font-size: 1rem;
+    margin-right: 6px;
+    cursor: pointer;
+    background: #e9ecef;
+    color: #333;
+    transition: background 0.2s, color 0.2s;
+}
+button.action-btn:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+.modal {
+    display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto;
+    background-color: rgba(0,0,0,0.4); justify-content: center; align-items: center;
+}
+.modal-content {
+    background-color: #fff; padding: 20px; border-radius: 12px; width: 400px; margin: 10% auto; box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+}
+.close {
+    float: right; font-size: 24px; font-weight: bold; color: #aaa; cursor: pointer;
+}
+.close:hover { color: var(--primary-color); }
+@media (max-width: 900px) {
+    .container {
+        padding: 16px 4px;
+    }
+    nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .primary-btn, .secondary-btn {
+        width: 100%;
+    }
+    
+    form#studentForm {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+    
+    form#studentForm input, form#studentForm button {
+        min-width: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+    .modal-content {
+        width: 95vw;
+    }
+}
+form#courseForm, form#instructorForm {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+form#courseForm input, form#courseForm button,
+form#instructorForm input, form#instructorForm button {
+    flex: 1 1 180px;
+    min-width: 140px;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s;
+}
+
+form#courseForm input:focus, form#instructorForm input:focus {
+    border: 1.5px solid var(--primary-color);
+}
+
+form#courseForm button, form#instructorForm button {
+    max-width: 160px;
+    flex: 0 0 140px;
+    align-self: stretch;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+form#courseForm button:hover, form#instructorForm button:hover {
+    background: var(--primary-hover);
+}
+
+#section-courses h2, #section-instructors h2 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: var(--text-color);
+    font-weight: 600;
+    text-align: center;
+}
+
+#coursesTable, #instructorsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: #fafbfc;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+#coursesTable th, #coursesTable td,
+#instructorsTable th, #instructorsTable td {
+    padding: 12px 10px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+#coursesTable th, #instructorsTable th {
+    background: #f0f4f8;
+    font-weight: 600;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+#coursesTable tr:last-child td,
+#instructorsTable tr:last-child td {
+    border-bottom: none;
+}
+
+@media (max-width: 900px) {
+    form#courseForm, form#instructorForm {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+    }
+    
+    form#courseForm input, form#courseForm button,
+    form#instructorForm input, form#instructorForm button {
+        min-width: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>University Management System</h1>
+            <nav>
+                <a href="students.html" class="nav-btn">Students</a>
+                <a href="courses.html" class="nav-btn">Courses</a>
+                <a href="instructors.html" class="nav-btn">Instructors</a>
+            </nav>
+        </header>
+        <main class="home-content">
+            <div class="welcome-section">
+                <h2>Welcome to the University Management System</h2>
+                <p>Manage your university's academic resources efficiently with our comprehensive management system.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>Student Management</h3>
+                    <p>Add, edit, and manage student records with ease.</p>
+                    <a href="students.html" class="feature-btn">Manage Students</a>
+                </div>
+                <div class="feature-card">
+                    <h3>Course Management</h3>
+                    <p>Organize and maintain course information effectively.</p>
+                    <a href="courses.html" class="feature-btn">Manage Courses</a>
+                </div>
+                <div class="feature-card">
+                    <h3>Instructor Management</h3>
+                    <p>Handle instructor profiles and assignments.</p>
+                    <a href="instructors.html" class="feature-btn">Manage Instructors</a>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- Modals for editing (Students, Courses, Instructors) -->
+    <div id="editStudentModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeEditStudentModal">&times;</span>
+        <h2>Edit Student</h2>
+        <form id="editStudentForm">
+            <input type="hidden" name="studentId" id="editStudentId">
+            <input type="text" name="firstName" id="editStudentFirstName" placeholder="First Name" required>
+            <input type="text" name="lastName" id="editStudentLastName" placeholder="Last Name" required>
+            <input type="date" name="dateOfBirth" id="editStudentDateOfBirth" required>
+            <input type="email" name="email" id="editStudentEmail" placeholder="Email" required>
+            <button type="submit">Update Student</button>
+        </form>
+      </div>
+    </div>
+    <div id="editCourseModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeEditCourseModal">&times;</span>
+        <h2>Edit Course</h2>
+        <form id="editCourseForm">
+            <input type="hidden" name="courseId" id="editCourseId">
+            <input type="text" name="courseName" id="editCourseName" placeholder="Course Name" required>
+            <input type="text" name="courseCode" id="editCourseCode" placeholder="Course Code" required>
+            <input type="number" name="credits" id="editCourseCredits" placeholder="Credits" min="1" required>
+            <button type="submit">Update Course</button>
+        </form>
+      </div>
+    </div>
+    <div id="editInstructorModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeEditInstructorModal">&times;</span>
+        <h2>Edit Instructor</h2>
+        <form id="editInstructorForm">
+            <input type="hidden" name="instructorId" id="editInstructorId">
+            <input type="text" name="firstName" id="editInstructorFirstName" placeholder="First Name" required>
+            <input type="text" name="lastName" id="editInstructorLastName" placeholder="Last Name" required>
+            <input type="email" name="email" id="editInstructorEmail" placeholder="Email" required>
+            <input type="text" name="department" id="editInstructorDepartment" placeholder="Department">
+            <button type="submit">Update Instructor</button>
+        </form>
+      </div>
+    </div>
+    <script>
+        // Tab switching logic
+        const tabStudents = document.getElementById('tab-students');
+        const tabCourses = document.getElementById('tab-courses');
+        const tabInstructors = document.getElementById('tab-instructors');
+        const sectionStudents = document.getElementById('section-students');
+        const sectionCourses = document.getElementById('section-courses');
+        const sectionInstructors = document.getElementById('section-instructors');
+
+        tabStudents.onclick = () => {
+            sectionStudents.style.display = '';
+            sectionCourses.style.display = 'none';
+            sectionInstructors.style.display = 'none';
+            tabStudents.className = 'primary-btn';
+            tabCourses.className = 'secondary-btn';
+            tabInstructors.className = 'secondary-btn';
+        };
+        tabCourses.onclick = () => {
+            sectionStudents.style.display = 'none';
+            sectionCourses.style.display = '';
+            sectionInstructors.style.display = 'none';
+            tabStudents.className = 'secondary-btn';
+            tabCourses.className = 'primary-btn';
+            tabInstructors.className = 'secondary-btn';
+        };
+        tabInstructors.onclick = () => {
+            sectionStudents.style.display = 'none';
+            sectionCourses.style.display = 'none';
+            sectionInstructors.style.display = '';
+            tabStudents.className = 'secondary-btn';
+            tabCourses.className = 'secondary-btn';
+            tabInstructors.className = 'primary-btn';
+        };
+
+        function fetchStudents() {
+            fetch('students')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.querySelector('#studentsTable tbody');
+                    tbody.innerHTML = '';
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No students found.</td></tr>';
+                    } else {
+                        data.forEach(s => {
+                            tbody.innerHTML += `<tr>
+                                <td>${s.studentId}</td>
+                                <td>${s.firstName}</td>
+                                <td>${s.lastName}</td>
+                                <td>${s.dateOfBirth}</td>
+                                <td>${s.email}</td>
+                                <td>
+                                    <button class="action-btn" onclick="editStudent(${s.studentId}, '${s.firstName}', '${s.lastName}', '${s.dateOfBirth}', '${s.email}')">Edit</button>
+                                    <button class="action-btn delete" onclick="deleteStudent(${s.studentId})">Delete</button>
+                                </td>
+                            </tr>`;
+                        });
+                    }
+                });
+        }
+        document.getElementById('studentForm').onsubmit = function(e) {
+            e.preventDefault();
+            const form = e.target;
+            fetch('students', {
+                method: 'POST',
+                body: new URLSearchParams(new FormData(form))
+            }).then(() => {
+                form.reset();
+                fetchStudents();
+            });
+        };
+        function deleteStudent(id) {
+            if (confirm('Are you sure you want to delete this student?')) {
+                fetch('students?id=' + id, { method: 'DELETE' })
+                    .then(() => fetchStudents());
+            }
+        }
+        // Edit Modal Logic
+        const modal = document.getElementById('editStudentModal');
+        const closeModal = document.getElementById('closeEditStudentModal');
+        closeModal.onclick = function() { modal.style.display = 'none'; };
+        window.onclick = function(event) { if (event.target == modal) modal.style.display = 'none'; };
+        function editStudent(id, firstName, lastName, dateOfBirth, email) {
+            document.getElementById('editStudentId').value = id;
+            document.getElementById('editStudentFirstName').value = firstName;
+            document.getElementById('editStudentLastName').value = lastName;
+            document.getElementById('editStudentDateOfBirth').value = dateOfBirth;
+            document.getElementById('editStudentEmail').value = email;
+            modal.style.display = 'block';
+        }
+        document.getElementById('editStudentForm').onsubmit = function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const params = new URLSearchParams(new FormData(form));
+            params.append('_method', 'PUT');
+            fetch('students', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                modal.style.display = 'none';
+                fetchStudents();
+            })
+            .catch(error => {
+                console.error('Error updating student:', error);
+                alert('Error updating student. Please try again.');
+            });
+        };
+
+        // --- Courses CRUD ---
+        function fetchCourses() {
+            fetch('courses')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.querySelector('#coursesTable tbody');
+                    tbody.innerHTML = '';
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No courses found.</td></tr>';
+                    } else {
+                        data.forEach(c => {
+                            tbody.innerHTML += `<tr>
+                                <td>${c.courseId}</td>
+                                <td>${c.courseName}</td>
+                                <td>${c.courseCode}</td>
+                                <td>${c.credits}</td>
+                                <td>
+                                    <button class="action-btn" onclick="editCourse(${c.courseId}, '${c.courseName}', '${c.courseCode}', ${c.credits})">Edit</button>
+                                    <button class="action-btn delete" onclick="deleteCourse(${c.courseId})">Delete</button>
+                                </td>
+                            </tr>`;
+                        });
+                    }
+                });
+        }
+        document.getElementById('courseForm').onsubmit = function(e) {
+            e.preventDefault();
+            const form = e.target;
+            fetch('courses', {
+                method: 'POST',
+                body: new URLSearchParams(new FormData(form))
+            }).then(() => {
+                form.reset();
+                fetchCourses();
+            });
+        };
+        function deleteCourse(id) {
+            if (confirm('Are you sure you want to delete this course?')) {
+                fetch('courses?id=' + id, { method: 'DELETE' })
+                    .then(() => fetchCourses());
+            }
+        }
+        // Edit Course Modal Logic
+        const courseModal = document.getElementById('editCourseModal');
+        const closeCourseModal = document.getElementById('closeEditCourseModal');
+        closeCourseModal.onclick = function() { courseModal.style.display = 'none'; };
+        window.onclick = function(event) {
+            if (event.target == courseModal) courseModal.style.display = 'none';
+            if (event.target == modal) modal.style.display = 'none';
+        };
+        function editCourse(id, name, code, credits) {
+            document.getElementById('editCourseId').value = id;
+            document.getElementById('editCourseName').value = name;
+            document.getElementById('editCourseCode').value = code;
+            document.getElementById('editCourseCredits').value = credits;
+            courseModal.style.display = 'block';
+        }
+        document.getElementById('editCourseForm').onsubmit = function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const params = new URLSearchParams(new FormData(form));
+            params.append('_method', 'PUT');
+            fetch('courses', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                courseModal.style.display = 'none';
+                fetchCourses();
+            })
+            .catch(error => {
+                console.error('Error updating course:', error);
+                alert('Error updating course. Please try again.');
+            });
+        };
+
+        // --- Instructors CRUD ---
+        function fetchInstructors() {
+            fetch('instructors')
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.querySelector('#instructorsTable tbody');
+                    tbody.innerHTML = '';
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No instructors found.</td></tr>';
+                    } else {
+                        data.forEach(i => {
+                            tbody.innerHTML += `<tr>
+                                <td>${i.instructorId}</td>
+                                <td>${i.firstName}</td>
+                                <td>${i.lastName}</td>
+                                <td>${i.email}</td>
+                                <td>${i.department || ''}</td>
+                                <td>
+                                    <button class="action-btn" onclick="editInstructor(${i.instructorId}, '${i.firstName}', '${i.lastName}', '${i.email}', '${i.department || ''}')">Edit</button>
+                                    <button class="action-btn delete" onclick="deleteInstructor(${i.instructorId})">Delete</button>
+                                </td>
+                            </tr>`;
+                        });
+                    }
+                });
+        }
+        document.getElementById('instructorForm').onsubmit = function(e) {
+            e.preventDefault();
+            const form = e.target;
+            fetch('instructors', {
+                method: 'POST',
+                body: new URLSearchParams(new FormData(form))
+            }).then(() => {
+                form.reset();
+                fetchInstructors();
+            });
+        };
+        function deleteInstructor(id) {
+            if (confirm('Are you sure you want to delete this instructor?')) {
+                fetch('instructors?id=' + id, { method: 'DELETE' })
+                    .then(() => fetchInstructors());
+            }
+        }
+        // Edit Instructor Modal Logic
+        const instructorModal = document.getElementById('editInstructorModal');
+        const closeInstructorModal = document.getElementById('closeEditInstructorModal');
+        closeInstructorModal.onclick = function() { instructorModal.style.display = 'none'; };
+        function editInstructor(id, firstName, lastName, email, department) {
+            document.getElementById('editInstructorId').value = id;
+            document.getElementById('editInstructorFirstName').value = firstName;
+            document.getElementById('editInstructorLastName').value = lastName;
+            document.getElementById('editInstructorEmail').value = email;
+            document.getElementById('editInstructorDepartment').value = department;
+            instructorModal.style.display = 'block';
+        }
+        document.getElementById('editInstructorForm').onsubmit = function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const params = new URLSearchParams(new FormData(form));
+            params.append('_method', 'PUT');
+            fetch('instructors', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                instructorModal.style.display = 'none';
+                fetchInstructors();
+            })
+            .catch(error => {
+                console.error('Error updating instructor:', error);
+                alert('Error updating instructor. Please try again.');
+            });
+        };
+
+        // Initial load
+        fetchStudents();
+        fetchCourses();
+        fetchInstructors();
+    </script>
+</body>
+</html>

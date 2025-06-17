@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - University Management System</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+        }
+
+        .user-info .user-details {
+            flex: 1;
+        }
+
+        .user-info .user-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .user-info .user-role {
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: var(--error-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+
+        /* .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab:hover {
+            color: var(--primary-color);
+        } */
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+
+        .users-table th,
+        .users-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .users-table th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        .users-table tr:hover {
+            background: var(--bg-light);
+        }
+
+        .role-select {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            margin: 0 2px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #16a085;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .filter-select {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .role-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .role-admin {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .role-instructor {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .role-student {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .role-client {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--border-color);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            transition: background 0.2s;
+        }
+
+        .back-btn:hover {
+            background: var(--text-light);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="user-info">
+            <img src="../assets/image.png" alt="User Avatar">
+            <div class="user-details">
+                <div class="user-name" id="userName">Admin User</div>
+                <div class="user-role">Administrator</div>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <a href="dashboard.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+
+        <h1>User Management</h1>
+
+        <div class="tabs">
+            <button class="tab active" id="usersTab" onclick="showTab('users')">Users</button>
+            <!-- <button class="tab" onclick="showTab('requests')">Enrollment Requests</button> -->
+        </div>
+
+        <div id="usersTab" class="tab-content active">
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search users by name or email...">
+                <select id="roleFilter" class="filter-select">
+                    <option value="">All Roles</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="INSTRUCTOR">Instructor</option>
+                    <option value="STUDENT">Student</option>
+                    <option value="CLIENT">Client</option>
+                </select>
+                <button class="btn btn-primary" onclick="filterUsers()">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+
+            <table class="users-table" id="usersTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Current Role</th>
+                        <th>Change Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Users will be loaded here dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="requestsTab" class="tab-content">
+            <div class="dashboard-card">
+                <h3>Enrollment Requests</h3>
+                <p>Manage enrollment requests from this dedicated page.</p>
+                <a href="admin-enrollment-requests.html" class="btn btn-primary">
+                    <i class="fas fa-external-link-alt"></i> Go to Enrollment Requests
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allUsers = [];
+        let filteredUsers = [];
+
+        // Check authentication on page load
+        function checkAuth() {
+            fetch('/university-management-1.0-SNAPSHOT/check-auth', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.authenticated || data.role !== 'ADMIN') {
+                    window.location.href = '../login.html';
+                } else {
+                    document.getElementById('userName').textContent = data.name;
+                    loadUsers();
+                }
+            })
+            .catch(() => {
+                window.location.href = '../login.html';
+            });
+        }
+
+        // Show tab functionality
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+
+            // Load data if needed
+            if (tabName === 'users') {
+                loadUsers();
+            }
+        }
+
+        // Load all users
+        function loadUsers() {
+            fetch('/university-management-1.0-SNAPSHOT/admin/users', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                allUsers = data;
+                filteredUsers = [...allUsers];
+                displayUsers(filteredUsers);
+            })
+            .catch(error => {
+                console.error('Error loading users:', error);
+            });
+        }
+
+        // Display users in table
+        function displayUsers(users) {
+            const tbody = document.querySelector('#usersTable tbody');
+            tbody.innerHTML = '';
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.firstName} ${user.lastName}</td>
+                    <td>${user.email}</td>
+                    <td><span class="role-badge role-${user.role.toLowerCase()}">${user.role}</span></td>
+                    <td>
+                        <select class="role-select" onchange="changeUserRole(${user.id}, this.value)">
+                            <option value="ADMIN" ${user.role === 'ADMIN' ? 'selected' : ''}>Admin</option>
+                            <option value="INSTRUCTOR" ${user.role === 'INSTRUCTOR' ? 'selected' : ''}>Instructor</option>
+                            <option value="STUDENT" ${user.role === 'STUDENT' ? 'selected' : ''}>Student</option>
+                            <option value="CLIENT" ${user.role === 'CLIENT' ? 'selected' : ''}>Client</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button class="btn btn-success" onclick="addAsStudent(${user.id})" title="Add as Student">
+                            <i class="fas fa-user-graduate"></i>
+                        </button>
+                        <button class="btn btn-warning" onclick="addAsInstructor(${user.id})" title="Add as Instructor">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Filter users
+        function filterUsers() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const roleFilter = document.getElementById('roleFilter').value;
+
+            filteredUsers = allUsers.filter(user => {
+                const matchesSearch = 
+                    user.firstName.toLowerCase().includes(searchTerm) ||
+                    user.lastName.toLowerCase().includes(searchTerm) ||
+                    user.email.toLowerCase().includes(searchTerm);
+                
+                const matchesRole = !roleFilter || user.role === roleFilter;
+
+                return matchesSearch && matchesRole;
+            });
+
+            displayUsers(filteredUsers);
+        }
+
+        // Change user role
+        function changeUserRole(userId, newRole) {
+            if (confirm(`Are you sure you want to change this user's role to ${newRole}?`)) {
+                fetch('/university-management-1.0-SNAPSHOT/admin/users/role', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        userId: userId,
+                        role: newRole
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('User role updated successfully!');
+                        loadUsers(); // Reload to reflect changes
+                    } else {
+                        alert('Error updating user role: ' + (data.message || 'Unknown error'));
+                        loadUsers(); // Reload to reset form
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error updating user role');
+                    loadUsers(); // Reload to reset form
+                });
+            } else {
+                loadUsers(); // Reload to reset select value
+            }
+        }
+
+        // Add user as student
+        function addAsStudent(userId) {
+            if (confirm('Add this user as a student?')) {
+                fetch('/university-management-1.0-SNAPSHOT/admin/users/add-student', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        userId: userId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message || (data.success ? 'User added as student!' : 'Error adding user as student'));
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error adding user as student');
+                });
+            }
+        }
+
+        // Add user as instructor
+        function addAsInstructor(userId) {
+            if (confirm('Add this user as an instructor?')) {
+                fetch('/university-management-1.0-SNAPSHOT/admin/users/add-instructor', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        userId: userId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message || (data.success ? 'User added as instructor!' : 'Error adding user as instructor'));
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error adding user as instructor');
+                });
+            }
+        }
+
+        // Logout function
+        function logout() {
+            fetch('/university-management-1.0-SNAPSHOT/logout', {
+                method: 'POST',
+                credentials: 'include'
+            })
+            .then(() => {
+                window.location.href = '../login.html';
+            });
+        }
+
+        // Add event listeners for search
+        document.getElementById('searchInput').addEventListener('input', filterUsers);
+        document.getElementById('roleFilter').addEventListener('change', filterUsers);
+
+        // Initialize page
+        window.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html> 

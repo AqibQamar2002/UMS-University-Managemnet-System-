@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - University Management System</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .auth-container {
+            max-width: 360px;
+            margin: 80px auto;
+            padding: 28px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .auth-container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            font-size: 1.8rem;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .auth-form input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .auth-form button {
+            width: 100%;
+            max-width: none !important;
+            min-width: 0 !important;
+            flex: none !important;
+            align-self: auto !important;
+            height: auto !important;
+            padding: 10px 0 !important;
+            font-size: 1rem !important;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 4px;
+            box-sizing: border-box;
+            display: block;
+        }
+
+        .auth-form button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .auth-form button:active {
+            transform: translateY(0);
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.9rem;
+        }
+
+        .auth-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            text-align: center;
+            margin-bottom: 12px;
+            display: none;
+            font-size: 0.9rem;
+            padding: 8px;
+            background-color: rgba(220, 38, 38, 0.1);
+            border-radius: 4px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group input {
+            padding-left: 36px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <h1>Welcome Back</h1>
+        <div id="errorMessage" class="error-message"></div>
+        <form id="loginForm" class="auth-form">
+            <div class="input-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit">Sign In</button>
+        </form>
+        <div class="auth-links">
+            <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is already logged in and redirect accordingly
+        function checkAuthAndRedirect() {
+            fetch('/university-management-1.0-SNAPSHOT/check-auth', {
+                method: 'GET',
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.authenticated) {
+                    // Redirect based on user role
+                    if (data.role === 'ADMIN') {
+                        window.location.href = 'admin/dashboard.html';
+                    } else if (data.role === 'INSTRUCTOR') {
+                        window.location.href = 'instructor-dashboard.html';
+                    } else {
+                        window.location.href = 'client/dashboard.html';
+                    }
+                }
+            })
+            .catch(error => {
+                // User not authenticated or error, allow access to login page
+                console.log('User not authenticated, showing login page');
+            });
+        }
+
+        // Run authentication check when page loads
+        window.addEventListener('DOMContentLoaded', checkAuthAndRedirect);
+
+        document.getElementById('loginForm').onsubmit = function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            fetch('/university-management-1.0-SNAPSHOT/login', {
+                method: 'POST',
+                body: new URLSearchParams(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Redirect based on user role
+                    if (data.role === 'ADMIN') {
+                        window.location.href = 'admin/dashboard.html';
+                    }
+                    else if (data.role === 'INSTRUCTOR') {
+                        window.location.href = 'instructor-dashboard.html';
+                    }
+                    else {
+                        window.location.href = 'client/dashboard.html';
+                    }
+                } else {
+                    const errorMessage = document.getElementById('errorMessage');
+                    errorMessage.textContent = data.message || 'Invalid email or password';
+                    errorMessage.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const errorMessage = document.getElementById('errorMessage');
+                errorMessage.textContent = 'An error occurred. Please try again.';
+                errorMessage.style.display = 'block';
+            });
+        };
+    </script>
+</body>
+</html> 
